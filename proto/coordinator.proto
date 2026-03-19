@@ -1,0 +1,14 @@
+syntax = "proto3";
+package coordinator;
+
+service Coordinator {
+    rpc PingWorker (PingRequest) returns (PingResponse);
+}
+
+message PingRequest {
+    string worker_id = 1;
+}
+
+message PingResponse {
+    bool ok = 1;
+}
