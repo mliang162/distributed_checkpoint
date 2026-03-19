@@ -13,5 +13,7 @@ fn hello_world() -> PyResult<String> {
 #[pymodule]
 fn _core(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(hello_world, m)?)?;
+    m.add_function(wrap_pyfunction!(io_runtime::load_dataset_benchmark, m)?)?;
+    m.add_class::<storage::s3_client::S3Client>()?;
     Ok(())
 }

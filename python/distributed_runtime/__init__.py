@@ -1,4 +1,4 @@
-from ._core import hello_world
+from ._core import hello_world, load_dataset_benchmark, S3Client
 from .api import load_dataset, save_checkpoint
 
-__all__ = ["hello_world", "load_dataset", "save_checkpoint"]
+__all__ = ["hello_world", "load_dataset", "save_checkpoint", "load_dataset_benchmark", "S3Client"]
