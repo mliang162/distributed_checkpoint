@@ -7,4 +7,4 @@ result = distributed_runtime.hello_world()
 print(f"Rust returned: {result}") 
 
 assert result == "Hello from Rust distributed_runtime core!", f"Unexpected result: {result}"
-print("✅ Python/Rust FFI Bridge is working perfectly!")
+print("Python/Rust FFI Bridge is working perfectly!")
