@@ -15,6 +15,7 @@ object_store = { version = "0.9.0", features = ["aws"] }
 tonic = "0.10.0"
 prost = "0.12.0"
 futures = "0.3.30"
+bytes = "1.0"
 
 [build-dependencies]
 tonic-build = "0.10.0"

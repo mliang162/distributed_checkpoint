@@ -4,6 +4,7 @@ use object_store::path::Path as ObjectStorePath;
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use std::sync::Arc;
+use bytes::Bytes;
 
 #[pyclass]
 pub struct S3Client {
@@ -82,5 +83,32 @@ impl S3Client {
         }
 
         Ok(py_results)
+    }
+
+    /// Asynchronously uploads a chunk of raw bytes to S3.
+    /// This immediately releases the Python GIL so training can resume while uploading.
+    pub fn upload_checkpoint<'py>(&self, py: Python<'py>, path: String, data: &'py [u8]) -> PyResult<()> {
+        let store = Arc::clone(&self.store);
+        
+        // We clone the raw bytes slice into an immutable `bytes::Bytes` object 
+        // to safely hand off to the background tokio task
+        let bytes_data = Bytes::copy_from_slice(data);
+        let os_path = ObjectStorePath::from(path);
+
+        // Release the GIL, letting Python continue Execution instantly!
+        py.allow_threads(move || {
+            let rt = tokio::runtime::Builder::new_multi_thread()
+                .enable_all()
+                .build()
+                .unwrap();
+            
+            rt.block_on(async move {
+                // Perform the async S3 PUT request
+                match store.put(&os_path, bytes_data).await {
+                    Ok(_) => Ok(()),
+                    Err(e) => Err(pyo3::exceptions::PyIOError::new_err(e.to_string()))
+                }
+            })
+        })
     }
 }
