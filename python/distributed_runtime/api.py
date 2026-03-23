@@ -7,7 +7,21 @@ def load_dataset(uri: str):
 
 import pickle
 from ._core import S3Client
+from . import _core
 
+def start_coordinator(port: int = 50051):
+    """
+    Start the gRPC coordinator server on the specified port.
+    """
+    print(f"Starting python gRPC coordinator on port {port}")
+    _core.start_coordinator(port)
+
+def start_worker(worker_id: str, coordinator_addr: str = "http://127.0.0.1:50051"):
+    """
+    Start a worker node that sends heartbeats to the coordinator.
+    """
+    print(f"Starting python gRPC worker {worker_id} pointing to {coordinator_addr}")
+    _core.start_worker(worker_id, coordinator_addr)
 def save_checkpoint(client: S3Client, s3_path: str, state_dict: dict):
     """
     Save an asynchronous checkpoint via the Rust runtime.
